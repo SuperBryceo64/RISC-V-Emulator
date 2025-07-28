@@ -1,0 +1,36 @@
+-ECALL is activated when bit 4 of the interrupt flags is set.
+-The requested service is given by register a2
+-Any other parameters ECALL may need are given by registers a3, a4, etc.
+-ECALL returns its success state in register a0; 0 indicates success and a non-zero number indicates an error code
+-ECALL's services:
+   -Halt (block until a key is pressed): a2 = 0x0
+
+   -Terminate program:                   a2 = 0x1
+
+   -Restart program:                     a2 = 0x2
+
+   -Print CPU Info:                      a2 = 0x3, prints CPU base and extensions
+
+   -Push onto stack:                     a2 = 0x4, a3 = data being pushed
+                                         Return value: sp = new stack pointer
+                                         Error codes: 0x1 = stack overflow
+
+   -Pop from stack:                      a2 = 0x5, a1 = data being popped
+                                         Return value: sp = new stack pointer
+                                         Error codes: 0x1 = empty stack
+
+   -Allocate memory to heap:             a2 = 0x6, a3 = # of bytes to allocate
+                                         Return value: a1 = starting address of allocated memory
+                                         Error codes: 0x1 = requesting unallowed number of bytes (either 0, negative, or more than 32)
+						      0x2 = next available heap address is part of stack space
+
+   -Free memory from heap:               a2 = 0x7, a3 = starting address to free, a4 = # of bytes to free
+                                         Error codes: 0x1 = address is not already allocated on heap
+                                                      0x2 = attempting to free more bytes than were allocated
+
+   -Read character from input buffer:    a2 = 0x8
+                                         Return value: a1[7:0] = received character
+
+   -Write character to output buffer:    a2 = 0x9, a3[7:0] = character to write
+
+-A status of -1 indicates that the requested service doesn't exist 
